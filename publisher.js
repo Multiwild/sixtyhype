@@ -31,10 +31,11 @@ async function init() {
   show("app");
   $("avatar").src = status.user.avatar_url || "";
   $("nickname").textContent = status.user.display_name || "";
-  $("username").textContent = status.user.username ? "@" + status.user.username : "";
+  $("username").textContent = "";
   creator = await api("/api/creator-info");
   if (creator.creator_nickname) $("nickname").textContent = creator.creator_nickname;
   if (creator.creator_avatar_url) $("avatar").src = creator.creator_avatar_url;
+  if (creator.creator_username) $("username").textContent = "@" + creator.creator_username;
   $("cannot-post").hidden = creator.can_post !== false;
   setupForm();
   loadClips();
@@ -136,6 +137,7 @@ async function post(mode) {
       : "Uploaded! Your video is being processed — it may take a few minutes to appear on your profile.";
     pollStatus(publish_id);
     loadClips();
+    validate();
   } catch (err) {
     result.textContent = "Error: " + err.message;
     validate();
