@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>sixtyhype publisher</title><meta name="robots" content="noindex">
+<link rel="stylesheet" href="style.css"></head>
+<body><main>
+<p class="logo"><span>sixty</span>hype</p>
+<p id="msg" class="tag">Connecting your TikTok account…</p>
+<script>
+(async () => {
+  const q = new URLSearchParams(location.search);
+  const msg = document.getElementById("msg");
+  if (q.get("error")) {
+    msg.textContent = "TikTok login was cancelled: " + (q.get("error_description") || q.get("error"));
+    return;
+  }
+  try {
+    const res = await fetch("http://127.0.0.1:8765/api/exchange", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: q.get("code"), state: q.get("state") }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    location.replace("publisher.html");
+  } catch (err) {
+    msg.textContent = "Could not connect: " + err.message;
+  }
+})();
+</script>
+</main></body></html>
